@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>garspace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link type="text/css" rel="stylesheet" href="/style.css"/>
+  <link rel="icon" href="/favicon.png">
+
+  <style type="text/css">
+      .elm-plot {
+        font-size: 12px;
+      }
+  </style>
+</head>
+
+<body>
+    <h1 style="display: inline-block;"><a style="color: #444; text-decoration: none;" class="subtle-link" href="/"><i>garspace</i></a></h1>
+    <div style="margin: 41px 0; display: inline-block; float: right;">
+        <a style="color: gray;" href="/">home</a>
+        <a style="color: gray;" href="/about">about</a>
+    </div>
+    <p class="content-box" style="background-color: #fff;">Metrics! Metrics! Metrics!</p>
+
+    <script src="main.js"></script>
+    <div class="content-box elm-plot" style="background-color: #fff;">
+        <div id="elm-app"></div>
+        <script>
+            var node = document.getElementById('elm-app');
+            var app = Elm.Main.embed(
+                node,
+                {
+                    url: "http://garspace.com/metrics/api/top"
+                });
+            // Note: if your Elm module is named "MyThing.Root" you
+            // would call "Elm.MyThing.Root.embed(node)" instead.
+        </script>
+    </div>
+
+    <div class="content-box elm-plot" style="background-color: #fff;">
+        <div id="elm-app2"></div>
+        <script>
+            var node = document.getElementById('elm-app2');
+            var app = Elm.Main.embed(
+                node,
+                {
+                    url: "http://garspace.com/metrics/api/top"
+                });
+            // Note: if your Elm module is named "MyThing.Root" you
+            // would call "Elm.MyThing.Root.embed(node)" instead.
+        </script>
+    </div>
+
+    <div class="content-box elm-plot" style="background-color: #fff;">
+        <div id="elm-app5"></div>
+        <script>
+            var node = document.getElementById('elm-app5');
+            var app = Elm.Main.embed(
+                node,
+                {
+                    url: "http://garspace.com/metrics/api/toplimit"
+                });
+            // Note: if your Elm module is named "MyThing.Root" you
+            // would call "Elm.MyThing.Root.embed(node)" instead.
+        </script>
+    </div>
+
+    <div class="content-box elm-plot" style="background-color: #fff;">
+        <div id="elm-app6"></div>
+        <script>
+            var node = document.getElementById('elm-app6');
+            var app = Elm.Main.embed(
+                node,
+                {
+                    url: "http://garspace.com/metrics/api/toplimit"
+                });
+            // Note: if your Elm module is named "MyThing.Root" you
+            // would call "Elm.MyThing.Root.embed(node)" instead.
+        </script>
+    </div>
+</body>
+
+</html>
