@@ -11,6 +11,7 @@ import Json.Decode as Decode
 import Plot exposing (viewBarsCustom, groups, hintGroup, Point, Bars, defaultBarsPlotCustomizations, flyingHintContainer, normalHintContainerInner)
 import Dict
 import Svg.Attributes exposing (fill)
+import Time exposing (Time, second, millisecond)
 
 
 main =
@@ -29,9 +30,11 @@ type alias Flags =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( Model
-        ("Fetching metrics from " ++ flags.url ++ "...")
+        ("Fetching metrics from " ++ flags.url)
         flags.url
         Nothing
+        3
+        True
     , Http.send LoadMetrics (Http.get flags.url decodeMetricList)
     )
 
@@ -101,6 +104,8 @@ type alias Model =
                         }
                 }
             )
+    , numDots : Int
+    , loading : Bool
     }
 
 
@@ -118,6 +123,7 @@ origin =
 
 type Msg
     = LoadMetrics (Result Http.Error (List Metric))
+    | Tick Time
 
 
 toMetricGroups : List Metric -> List { hourOfDay : Int, programs : List { programName : String, windowTitle : String, count : Int } }
@@ -154,13 +160,22 @@ update msg model =
                 Ok metrics ->
                     ( { model
                         | status = (Basics.toString (List.length metrics)) ++ " metrics loaded"
+                        , loading = False
                         , metricGroups = Just (toMetricGroups metrics)
                       }
                     , Cmd.none
                     )
 
                 Err err ->
-                    ( { model | status = "Error retrieving metrics: " ++ (Basics.toString e) }, Cmd.none )
+                    ( { model
+                        | loading = False
+                        , status = "Error retrieving metrics: " ++ (Basics.toString err)
+                      }
+                    , Cmd.none
+                    )
+
+        Tick _ ->
+            ( { model | numDots = (model.numDots + 1) % 4 }, Cmd.none )
 
 
 
@@ -224,7 +239,11 @@ view : Model -> Html Msg
 view model =
     case model.metricGroups of
         Nothing ->
-            p [] [ text model.status ]
+            p [ Html.Attributes.align "center" ]
+                [ text (model.status ++ (String.repeat model.numDots "."))
+                , Html.span [ Html.Attributes.style [ ( "color", "white" ) ] ]
+                    [ text (String.repeat (3 - model.numDots) ".") ]
+                ]
 
         Just metricGroups ->
             let
@@ -258,4 +277,7 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    if model.loading then
+        Time.every (500 * millisecond) Tick
+    else
+        Sub.none
