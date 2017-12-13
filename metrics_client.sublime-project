@@ -1,0 +1,22 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+
+    "build_systems":
+    [
+        {
+            "cmd":
+            [
+                "elm-make",
+                "Main.elm",
+                "--output=main.js"
+            ],
+            "name": "Metrics Client Build",
+            "syntax": "build_results.sublime-syntax",
+        }
+    ]
+}

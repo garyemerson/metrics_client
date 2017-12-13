@@ -5,12 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link type="text/css" rel="stylesheet" href="/style.css"/>
   <link rel="icon" href="/favicon.png">
-
-  <style type="text/css">
-      .elm-plot {
-        font-size: 12px;
-      }
-  </style>
 </head>
 
 <body>
@@ -54,20 +48,6 @@
         <div id="elm-app5"></div>
         <script>
             var node = document.getElementById('elm-app5');
-            var app = Elm.Main.embed(
-                node,
-                {
-                    url: "http://garspace.com/metrics/api/toplimit"
-                });
-            // Note: if your Elm module is named "MyThing.Root" you
-            // would call "Elm.MyThing.Root.embed(node)" instead.
-        </script>
-    </div>
-
-    <div class="content-box elm-plot" style="background-color: #fff;">
-        <div id="elm-app6"></div>
-        <script>
-            var node = document.getElementById('elm-app6');
             var app = Elm.Main.embed(
                 node,
                 {

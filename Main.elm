@@ -10,6 +10,7 @@ import Http
 import Json.Decode as Decode
 import Plot exposing (viewBarsCustom, groups, hintGroup, Point, Bars, defaultBarsPlotCustomizations, flyingHintContainer, normalHintContainerInner)
 import Dict
+import Svg.Attributes exposing (fill)
 
 
 main =
@@ -27,7 +28,12 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( Model ("Fetching metrics from " ++ flags.url ++ "...") flags.url Nothing, send flags.url )
+    ( Model
+        ("Fetching metrics from " ++ flags.url ++ "...")
+        flags.url
+        Nothing
+    , Http.send LoadMetrics (Http.get flags.url decodeMetricList)
+    )
 
 
 
@@ -161,30 +167,57 @@ update msg model =
 -- VIEW
 
 
-data : List (List Float)
-data =
-    [ [ 1, 2 ]
-    , [ 1, 3 ]
-    , [ 2, 6 ]
-    , [ 4, 8 ]
-    ]
+garAxis : Plot.Axis
+garAxis =
+    let
+        l =
+            Plot.simpleLabel
+    in
+        Plot.customAxis <|
+            \summary ->
+                { position = Plot.closestToZero
+                , axisLine = Just (Plot.simpleLine summary)
+                , ticks = List.map Plot.simpleTick (Plot.decentPositions summary |> Plot.remove 0)
+                , labels =
+                    List.map
+                        (\f ->
+                            let
+                                label =
+                                    if f >= 1000 then
+                                        (toString (f / 1000.0)) ++ "k"
+                                    else
+                                        toString f
+                            in
+                                { position = f, view = (Plot.viewLabel [] (label)) }
+                        )
+                        (Plot.decentPositions summary |> Plot.remove 0)
+                , flipAnchor = False
+                }
 
 
 bars : Model -> Bars (List (List Float)) msg
 bars model =
-    groups
-        (List.map2
-            (hintGroup Maybe.Nothing)
-            (case model.metricGroups of
-                Nothing ->
-                    []
+    let
+        g =
+            (groups
+                (List.map2
+                    (hintGroup Maybe.Nothing)
+                    (case model.metricGroups of
+                        Nothing ->
+                            []
 
-                Just metricGroups ->
-                    List.map
-                        (\group -> toString group.hourOfDay)
-                        metricGroups
+                        Just metricGroups ->
+                            List.map
+                                (\group -> toString group.hourOfDay)
+                                (List.filter (\g -> g.hourOfDay >= 8 && g.hourOfDay <= 18) metricGroups)
+                    )
+                )
             )
-        )
+    in
+        { g
+            | styles = [ [ fill "gray" ], [ fill "lightgray" ], [ fill "#e6e9ef" ] ]
+            , axis = garAxis
+        }
 
 
 view : Model -> Html Msg
@@ -194,18 +227,29 @@ view model =
             p [] [ text model.status ]
 
         Just metricGroups ->
-            viewBarsCustom
-                { defaultBarsPlotCustomizations | height = 150, width = 200, margin = { top = 20, right = 20, bottom = 20, left = 20 } }
-                (bars model)
-                (List.map
-                    (\group ->
-                        List.map
-                            (\program -> toFloat program.count)
-                            group.programs
+            let
+                c =
+                    defaultBarsPlotCustomizations
+            in
+                viewBarsCustom
+                    { c
+                        | height = 150
+                        , width = 500
+                        , margin = { top = 20, right = 20, bottom = 20, left = 20 }
+                        , attributes = [ Svg.Attributes.fontSize "10px", Svg.Attributes.viewBox "-10 0 500 150" ]
+                    }
+                    (Debug.log "bars" (bars model))
+                    (Debug.log
+                        "data"
+                        (List.map
+                            (\group ->
+                                List.map
+                                    (\program -> toFloat program.count)
+                                    group.programs
+                            )
+                            (List.filter (\g -> g.hourOfDay >= 8 && g.hourOfDay <= 18) metricGroups)
+                        )
                     )
-                    metricGroups
-                 {- data -}
-                )
 
 
 

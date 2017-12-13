@@ -1,0 +1,294 @@
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$garAxis = function () {
+	var l = _terezka$elm_plot$Plot$simpleLabel;
+	return _terezka$elm_plot$Plot$customAxis(
+		function (summary) {
+			return {
+				position: _terezka$elm_plot$Plot$closestToZero,
+				axisLine: _elm_lang$core$Maybe$Just(
+					_terezka$elm_plot$Plot$simpleLine(summary)),
+				ticks: A2(
+					_elm_lang$core$List$map,
+					_terezka$elm_plot$Plot$simpleTick,
+					A2(
+						_terezka$elm_plot$Plot$remove,
+						0,
+						_terezka$elm_plot$Plot$decentPositions(summary))),
+				labels: A2(
+					_elm_lang$core$List$map,
+					function (f) {
+						var label = (_elm_lang$core$Native_Utils.cmp(f, 1000) > -1) ? A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(f / 1000.0),
+							'k') : _elm_lang$core$Basics$toString(f);
+						return {
+							position: f,
+							view: A2(
+								_terezka$elm_plot$Plot$viewLabel,
+								{ctor: '[]'},
+								label)
+						};
+					},
+					A2(
+						_terezka$elm_plot$Plot$remove,
+						0,
+						_terezka$elm_plot$Plot$decentPositions(summary))),
+				flipAnchor: false
+			};
+		});
+}();
+var _user$project$Main$bars = function (model) {
+	var g = _terezka$elm_plot$Plot$groups(
+		A2(
+			_elm_lang$core$List$map2,
+			_terezka$elm_plot$Plot$hintGroup(_elm_lang$core$Maybe$Nothing),
+			function () {
+				var _p0 = model.metricGroups;
+				if (_p0.ctor === 'Nothing') {
+					return {ctor: '[]'};
+				} else {
+					return A2(
+						_elm_lang$core$List$map,
+						function (group) {
+							return _elm_lang$core$Basics$toString(group.hourOfDay);
+						},
+						A2(
+							_elm_lang$core$List$filter,
+							function (g) {
+								return (_elm_lang$core$Native_Utils.cmp(g.hourOfDay, 8) > -1) && (_elm_lang$core$Native_Utils.cmp(g.hourOfDay, 18) < 1);
+							},
+							_p0._0));
+				}
+			}()));
+	return _elm_lang$core$Native_Utils.update(
+		g,
+		{
+			styles: {
+				ctor: '::',
+				_0: {
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$fill('gray'),
+					_1: {ctor: '[]'}
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$fill('lightgray'),
+						_1: {ctor: '[]'}
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$fill('#e6e9ef'),
+							_1: {ctor: '[]'}
+						},
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			axis: _user$project$Main$garAxis
+		});
+};
+var _user$project$Main$view = function (model) {
+	var _p1 = model.metricGroups;
+	if (_p1.ctor === 'Nothing') {
+		return A2(
+			_elm_lang$html$Html$p,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(model.status),
+				_1: {ctor: '[]'}
+			});
+	} else {
+		var c = _terezka$elm_plot$Plot$defaultBarsPlotCustomizations;
+		return A3(
+			_terezka$elm_plot$Plot$viewBarsCustom,
+			_elm_lang$core$Native_Utils.update(
+				c,
+				{
+					height: 150,
+					width: 500,
+					margin: {top: 20, right: 20, bottom: 20, left: 20},
+					attributes: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$fontSize('10px'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$viewBox('-10 0 500 150'),
+							_1: {ctor: '[]'}
+						}
+					}
+				}),
+			A2(
+				_elm_lang$core$Debug$log,
+				'bars',
+				_user$project$Main$bars(model)),
+			A2(
+				_elm_lang$core$Debug$log,
+				'data',
+				A2(
+					_elm_lang$core$List$map,
+					function (group) {
+						return A2(
+							_elm_lang$core$List$map,
+							function (program) {
+								return _elm_lang$core$Basics$toFloat(program.count);
+							},
+							group.programs);
+					},
+					A2(
+						_elm_lang$core$List$filter,
+						function (g) {
+							return (_elm_lang$core$Native_Utils.cmp(g.hourOfDay, 8) > -1) && (_elm_lang$core$Native_Utils.cmp(g.hourOfDay, 18) < 1);
+						},
+						_p1._0))));
+	}
+};
+var _user$project$Main$toMetricGroups = function (metrics) {
+	return A2(
+		_elm_lang$core$List$map,
+		function (_p2) {
+			var _p3 = _p2;
+			return {hourOfDay: _p3._0, programs: _p3._1};
+		},
+		_elm_lang$core$Dict$toList(
+			A3(
+				_elm_lang$core$List$foldr,
+				F2(
+					function (metric, dict) {
+						var _p4 = A2(_elm_lang$core$Dict$get, metric.hourOfDay, dict);
+						if (_p4.ctor === 'Just') {
+							return A3(
+								_elm_lang$core$Dict$insert,
+								metric.hourOfDay,
+								{
+									ctor: '::',
+									_0: {programName: metric.program, windowTitle: metric.windowTitle, count: metric.count},
+									_1: _p4._0
+								},
+								dict);
+						} else {
+							return A3(
+								_elm_lang$core$Dict$insert,
+								metric.hourOfDay,
+								{
+									ctor: '::',
+									_0: {programName: metric.program, windowTitle: metric.windowTitle, count: metric.count},
+									_1: {ctor: '[]'}
+								},
+								dict);
+						}
+					}),
+				_elm_lang$core$Dict$empty,
+				metrics)));
+};
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p5 = msg;
+		var _p6 = _p5._0;
+		if (_p6.ctor === 'Ok') {
+			var _p7 = _p6._0;
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						status: A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(
+								_elm_lang$core$List$length(_p7)),
+							' metrics loaded'),
+						metricGroups: _elm_lang$core$Maybe$Just(
+							_user$project$Main$toMetricGroups(_p7))
+					}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						status: A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Error retrieving metrics: ',
+							_elm_lang$core$Basics$toString(_elm_lang$core$Basics$e))
+					}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		}
+	});
+var _user$project$Main$origin = {
+	ctor: '::',
+	_0: {x: 0, y: 0},
+	_1: {ctor: '[]'}
+};
+var _user$project$Main$Flags = function (a) {
+	return {url: a};
+};
+var _user$project$Main$Metric = F4(
+	function (a, b, c, d) {
+		return {hourOfDay: a, program: b, windowTitle: c, count: d};
+	});
+var _user$project$Main$decodeMetricList = _elm_lang$core$Json_Decode$list(
+	A5(
+		_elm_lang$core$Json_Decode$map4,
+		_user$project$Main$Metric,
+		A2(_elm_lang$core$Json_Decode$field, 'hour_of_day', _elm_lang$core$Json_Decode$int),
+		A2(_elm_lang$core$Json_Decode$field, 'program', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'window_title', _elm_lang$core$Json_Decode$string),
+		A2(_elm_lang$core$Json_Decode$field, 'count', _elm_lang$core$Json_Decode$int)));
+var _user$project$Main$getMetrics = function (url) {
+	return A2(_elm_lang$http$Http$get, url, _user$project$Main$decodeMetricList);
+};
+var _user$project$Main$decodeMetric = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_user$project$Main$Metric,
+	A2(_elm_lang$core$Json_Decode$field, 'hour_of_day', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'program', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'window_title', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'count', _elm_lang$core$Json_Decode$int));
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {status: a, url: b, metricGroups: c};
+	});
+var _user$project$Main$LoadMetrics = function (a) {
+	return {ctor: 'LoadMetrics', _0: a};
+};
+var _user$project$Main$init = function (flags) {
+	return {
+		ctor: '_Tuple2',
+		_0: A3(
+			_user$project$Main$Model,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'Fetching metrics from ',
+				A2(_elm_lang$core$Basics_ops['++'], flags.url, '...')),
+			flags.url,
+			_elm_lang$core$Maybe$Nothing),
+		_1: A2(
+			_elm_lang$http$Http$send,
+			_user$project$Main$LoadMetrics,
+			A2(_elm_lang$http$Http$get, flags.url, _user$project$Main$decodeMetricList))
+	};
+};
+var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
+	{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})(
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (url) {
+			return _elm_lang$core$Json_Decode$succeed(
+				{url: url});
+		},
+		A2(_elm_lang$core$Json_Decode$field, 'url', _elm_lang$core$Json_Decode$string)));
+var _user$project$Main$send = function (url) {
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$Main$LoadMetrics,
+		_user$project$Main$getMetrics(url));
+};
