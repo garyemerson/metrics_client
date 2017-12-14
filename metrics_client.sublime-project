@@ -12,6 +12,7 @@
             "cmd":
             [
                 "elm-make",
+                "--yes",
                 "Main.elm",
                 "--output=main.js"
             ],

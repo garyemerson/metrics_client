@@ -8,7 +8,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as Decode
-import Plot exposing (viewBarsCustom, groups, hintGroup, Point, Bars, defaultBarsPlotCustomizations, flyingHintContainer, normalHintContainerInner)
+import Plot exposing (viewBarsCustom, groups, hintGroup, garGroup, Point, Bars, defaultBarsPlotCustomizations, flyingHintContainer, normalHintContainerInner)
 import Dict
 import Svg.Attributes exposing (fill)
 import Time exposing (Time, second, millisecond)
@@ -210,13 +210,26 @@ garAxis =
                 }
 
 
+
+--            (List
+--                { hourOfDay : Int
+--                , programs :
+--                    List
+--                        { programName : String
+--                        , windowTitle : String
+--                        , count : Int
+--                        }
+--                }
+--            )
+
+
 bars : Model -> Bars (List (List Float)) msg
 bars model =
     let
         g =
             (groups
-                (List.map2
-                    (hintGroup Maybe.Nothing)
+                (List.map3
+                    (garGroup Maybe.Nothing)
                     (case model.metricGroups of
                         Nothing ->
                             []
@@ -224,7 +237,16 @@ bars model =
                         Just metricGroups ->
                             List.map
                                 (\group -> toString group.hourOfDay)
-                                (List.filter (\g -> g.hourOfDay >= 8 && g.hourOfDay <= 18) metricGroups)
+                                (List.filter (\grp -> grp.hourOfDay >= 8 && grp.hourOfDay <= 18) metricGroups)
+                    )
+                    (case model.metricGroups of
+                        Nothing ->
+                            []
+
+                        Just metricGroups ->
+                            List.map
+                                (\group -> List.map (.programName) group.programs)
+                                (List.filter (\grp -> grp.hourOfDay >= 8 && grp.hourOfDay <= 18) metricGroups)
                     )
                 )
             )

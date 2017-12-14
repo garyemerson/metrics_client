@@ -39,6 +39,7 @@ module Plot
         , groups
         , group
         , hintGroup
+        , garGroup
         , histogram
         , histogramBar
         , customGroups
@@ -170,7 +171,7 @@ import Html exposing (Html, div, span)
 import Html.Events
 import Html.Attributes
 import Svg exposing (Svg, Attribute, svg, text_, tspan, text, g, path, rect, polygon)
-import Svg.Attributes as Attributes exposing (stroke, fill, class, r, x2, y2, style, strokeWidth, clipPath, transform, strokeDasharray)
+import Svg.Attributes as Attributes exposing (stroke, fill, class, r, x2, y2, style, strokeWidth, clipPath, transform, strokeDasharray, fontSize, x, y)
 import Internal.Draw as Draw exposing (..)
 import Internal.Colors exposing (..)
 import Json.Decode as Json
@@ -547,6 +548,49 @@ hintGroup hovering label heights =
     , verticalLine = onHovering (fullLine [ stroke darkGrey ]) hovering
     , hint = \g -> onHovering (div [] <| List.map normalHint heights) hovering g
     , bars = List.map (Bar Nothing) heights
+    }
+
+
+{-| Returns `Just` the element at the given index in the list,
+or `Nothing` if the index is out of range.
+-}
+getAt : Int -> List a -> Maybe a
+getAt idx xs =
+    if idx < 0 then
+        Nothing
+    else
+        List.head <| List.drop idx xs
+
+
+{-| For groups with a hint.
+-}
+garGroup : Maybe Point -> String -> List String -> List Float -> BarGroup
+garGroup hovering label barLabels heights =
+    { label = normalBarLabel label
+    , verticalLine = onHovering (fullLine [ stroke darkGrey ]) hovering
+    , hint = \g -> onHovering (div [] <| List.map normalHint heights) hovering g
+    , bars =
+        List.indexedMap
+            (\i h ->
+                Bar
+                    (Just
+                        (Svg.text_
+                            [ x "0"
+                            , y "0"
+                            , transform "translate(8, -3) rotate(-90)"
+                            , fontSize "8px"
+                            ]
+                            [ text
+                                (Maybe.withDefault
+                                    "foobar"
+                                    (getAt i barLabels)
+                                )
+                            ]
+                        )
+                    )
+                    h
+            )
+            heights
     }
 
 
@@ -1658,21 +1702,21 @@ viewActualBars summary { styles, maxWidth } groups =
 
         viewLabel label =
             g
-                [ Attributes.transform ("translate(" ++ toString (scaleValue summary.x (width / 2)) ++ ", -5)")
-                , Attributes.style "text-anchor: middle;"
+                [--Attributes.transform ("translate(" ++ toString (scaleValue summary.x (width / 2)) ++ ", -5)") ,
+                 --Attributes.style "text-anchor: middle;"
                 ]
                 [ label ]
 
         viewBar x attributes ( i, { height, label } ) =
             g [ place summary { x = offset x i, y = max (closestToZero summary.y.min summary.y.max) height } 0 0 ]
-                [ Svg.map never (Maybe.map viewLabel label |> Maybe.withDefault (text ""))
-                , rect
+                [ rect
                     (attributes
                         ++ [ Attributes.width (toString (scaleValue summary.x width))
                            , Attributes.height (toString (scaleValue summary.y (abs height)))
                            ]
                     )
                     []
+                , Svg.map never (Maybe.map viewLabel label |> Maybe.withDefault (text ""))
                 ]
 
         indexedHeights group =
