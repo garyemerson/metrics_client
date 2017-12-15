@@ -33,9 +33,9 @@ init flags =
         ("Fetching metrics from " ++ flags.url)
         flags.url
         Nothing
-        3
+        0
         True
-    , Http.send LoadMetrics (Http.get flags.url decodeMetricList)
+    , Http.send LoadMetrics (Http.get flags.url (Decode.list decodeMetric))
     )
 
 
@@ -45,7 +45,7 @@ init flags =
 
 getMetrics : String -> Http.Request (List Metric)
 getMetrics url =
-    Http.get url decodeMetricList
+    Http.get url (Decode.list decodeMetric)
 
 
 type alias Metric =
@@ -54,17 +54,6 @@ type alias Metric =
     , windowTitle : String
     , count : Int
     }
-
-
-decodeMetricList : Decode.Decoder (List Metric)
-decodeMetricList =
-    Decode.list
-        (Decode.map4 Metric
-            (Decode.field "hour_of_day" Decode.int)
-            (Decode.field "program" Decode.string)
-            (Decode.field "window_title" Decode.string)
-            (Decode.field "count" Decode.int)
-        )
 
 
 decodeMetric : Decode.Decoder Metric
@@ -107,14 +96,6 @@ type alias Model =
     , numDots : Int
     , loading : Bool
     }
-
-
-origin : List { x : Float, y : Float }
-origin =
-    [ { x = 0
-      , y = 0
-      }
-    ]
 
 
 
