@@ -1,4 +1,4 @@
-module Main exposing (..)
+module TripleBar exposing (..)
 
 import Http
 import Json.Decode as Decode
@@ -258,7 +258,7 @@ view model =
                         | height = 150
                         , width = 500
                         , margin = { top = 20, right = 20, bottom = 20, left = 20 }
-                        , attributes = [ Svg.Attributes.fontSize "10px", Svg.Attributes.viewBox "-10 0 500 150" ]
+                        , attributes = [ Svg.Attributes.fontSize "10px", Svg.Attributes.viewBox "-10 -25 500 175" ]
                     }
                     (Debug.log "bars" (bars model))
                     (Debug.log

@@ -1,7 +1,7 @@
 Graph ideas
 -----------
+* Work arrival by weekday
 * App Typical Idle Time
     * this would sort of be a measure of how interactive I am with each application.
 * Most Frequent App Switches
     * the most typical app transitions (e.g. sublime -> chrome when looking up documentation)
-* Work arrival by weekday

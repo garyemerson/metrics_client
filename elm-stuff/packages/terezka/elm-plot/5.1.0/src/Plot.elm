@@ -1712,7 +1712,7 @@ viewActualBars summary { styles, maxWidth } groups =
                 [ rect
                     (attributes
                         ++ [ Attributes.width (toString (scaleValue summary.x width))
-                           , Attributes.height (toString (scaleValue summary.y (abs height)))
+                           , Attributes.height (toString (scaleValue summary.y (abs (height - (summary.y.min)))))
                            ]
                     )
                     []

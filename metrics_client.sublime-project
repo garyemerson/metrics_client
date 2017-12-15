@@ -13,7 +13,8 @@
             [
                 "elm-make",
                 "--yes",
-                "Main.elm",
+                "SingleBar.elm",
+                "TripleBar.elm",
                 "--output=main.js"
             ],
             "name": "Metrics Client Build",

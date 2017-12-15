@@ -20,12 +20,12 @@
     </div>
 
     <script src="main.js"></script>
-    <div style="display: table; width: 90%; border-collapse:separate; border-spacing: 5px; margin: auto;">
-        <div class="content-box elm-plot" style="vertical-align: middle; height: 100%; background-color: #fff; width: 45%; display: table-cell;">
+    <div style="width: 90%; border-collapse:separate; border-spacing: 5px; margin: auto;">
+        <div class="content-box elm-plot" style="vertical-align: middle; height: 100%; background-color: #fff; max-width: 1000px; width: 75%; margin: 10px auto;">
             <div id="elm-app"></div>
             <script>
                 var node = document.getElementById('elm-app');
-                var app = Elm.Main.embed(
+                var app = Elm.TripleBar.embed(
                     node,
                     {
                         url: "http://garspace.com/metrics/api/top"
@@ -34,11 +34,24 @@
                 // would call "Elm.MyThing.Root.embed(node)" instead.
             </script>
         </div>
-        <div class="content-box elm-plot" style="vertical-align: middle; height: 100%; background-color: #fff; width: 45%; display: table-cell;">
+        <div class="content-box elm-plot" style="vertical-align: middle; height: 100%; background-color: #fff; max-width: 1000px; width: 75%; margin: 10px auto;">
+            <div id="elm-app6"></div>
+            <script>
+                var node = document.getElementById('elm-app6');
+                var app = Elm.SingleBar.embed(
+                    node,
+                    {
+                        url: "http://garspace.com/metrics/api/timein"
+                    });
+                // Note: if your Elm module is named "MyThing.Root" you
+                // would call "Elm.MyThing.Root.embed(node)" instead.
+            </script>
+        </div>
+        <div class="content-box elm-plot" style="vertical-align: middle; height: 100%; background-color: #fff; max-width: 1000px; width: 75%; margin: 10px auto;">
             <div id="elm-app5"></div>
             <script>
                 var node = document.getElementById('elm-app5');
-                var app = Elm.Main.embed(
+                var app = Elm.TripleBar.embed(
                     node,
                     {
                         url: "http://garspace.com/metrics/api/toplimit"
