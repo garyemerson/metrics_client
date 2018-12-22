@@ -136,37 +136,24 @@ garAxis =
                 , labels =
                     List.map
                         (\f ->
-                            let
-                                i =
-                                    truncate f
-
-                                label =
-                                    (toString (i // 60))
-                                        ++ ":"
-                                        ++ (if String.length (toString (i % 60)) > 1 then
-                                                (toString (i % 60))
-                                            else
-                                                "0" ++ (toString (i % 60))
-                                           )
-                            in
-                                { position = f, view = (Plot.viewLabel [] (label)) }
+                            { position = f
+                            , view = (Plot.viewLabel [] (minuteToTime (truncate f)))
+                            }
                         )
                         (Plot.decentPositions summary |> Plot.remove 0)
                 , flipAnchor = False
                 }
 
 
-
---            (List
---                { hourOfDay : Int
---                , programs :
---                    List
---                        { programName : String
---                        , windowTitle : String
---                        , count : Int
---                        }
---                }
---            )
+minuteToTime : Int -> String
+minuteToTime m =
+    (toString (m // 60))
+        ++ ":"
+        ++ (if String.length (toString (m % 60)) > 1 then
+                (toString (m % 60))
+            else
+                "0" ++ (toString (m % 60))
+           )
 
 
 bars : Model -> Bars (List (List Float)) msg
@@ -188,7 +175,7 @@ bars model =
                             []
 
                         Just metrics ->
-                            List.map (\_ -> [ "" ]) metrics
+                            List.map (\m -> [ minuteToTime (truncate m.avgMinutes) ]) metrics
                     )
                 )
             )
@@ -219,7 +206,7 @@ view model =
                         | height = 150
                         , width = 500
                         , margin = { top = 20, right = 20, bottom = 20, left = 20 }
-                        , attributes = [ Svg.Attributes.fontSize "10px", Svg.Attributes.viewBox "-10 0 500 160" ]
+                        , attributes = [ Svg.Attributes.fontSize "10px", Svg.Attributes.viewBox "-10 0 500 175" ]
                         , toDomainLowest = Basics.max 530
                     }
                     (Debug.log "bars" (bars model))
